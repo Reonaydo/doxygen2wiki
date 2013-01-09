@@ -221,6 +221,16 @@
 	</xsl:choose>
 </xsl:template>
 
+<xsl:template match="basecompoundref | derivedcompoundref">
+	<xsl:value-of select="$newline"/>
+	<xsl:text>* </xsl:text>
+	<xsl:call-template name="ref_class">
+		<xsl:with-param name="linktoname" select="."/>
+		<xsl:with-param name="type" select="'class'"/>
+	</xsl:call-template>
+	<xsl:value-of select="$newline"/>
+</xsl:template>
+
 <xsl:template name="simplesect-table">
 	<xsl:param name="sectkind"/>
 	<xsl:text>{| class="seealso"</xsl:text><xsl:value-of select="$newline"/>
@@ -410,6 +420,7 @@
 	<xsl:call-template name="paramlist"/>
 
 	<xsl:apply-templates select="exceptions"/>
+	<xsl:if test="initializer!=''"><xsl:apply-templates select="initializer"/></xsl:if>
 
 	<xsl:text> ===</xsl:text>
 	<xsl:value-of select="$newline"/>
@@ -485,6 +496,7 @@
 	<xsl:apply-templates select="type" />
 	<xsl:apply-templates select="declname" />
 	<xsl:apply-templates select="defval" />
+	<xsl:apply-templates select="defname" />
 	<xsl:text> </xsl:text>
 </xsl:template>
 
@@ -533,7 +545,7 @@
 		<xsl:text>&#160;</xsl:text>
 	</xsl:if>
 	<xsl:if test="$type='define'">
-		<xsl:text>''typedef''</xsl:text>
+		<xsl:text>#define</xsl:text>
 		<xsl:text>&#160;</xsl:text>
 	</xsl:if>
 
@@ -550,7 +562,8 @@
 
 	<xsl:call-template name="paramlist"/>
 	
-	<xsl:value-of select="exceptions"/>
+	<xsl:apply-templates select="exceptions"/>
+	<xsl:if test="initializer!=''"><xsl:apply-templates select="initializer"/></xsl:if>
 
 	<xsl:value-of select="$newline"/>
 	<xsl:if test="briefdescription/para">
@@ -592,25 +605,10 @@
 </xsl:template>
 
 
-<!--xsl:template name="short-class-table">
-	<xsl:text>{| width="100%" border="0" cellspacing=10</xsl:text>
-	<xsl:value-of select="$newline"/>
-	<xsl:for-each select="innerclass[@prot='public']">
-		<xsl:text>|-</xsl:text>
-		<xsl:value-of select="$newline"/>
-		<xsl:call-template name="class-short" select="."/>
-		<xsl:if test="position() != last()">
-			<xsl:text>-1-1-1-</xsl:text>
-			<xsl:value-of select="$newline"/>
-		</xsl:if>
-	</xsl:for-each>
-	<xsl:text>|}</xsl:text>
-</xsl:template-->
-
 <xsl:template match="/doxygen">
 <doc><pages type="Classes">
-<xsl:for-each select="(compounddef[@kind='class' or @kind='namespace' or @kind='struct' or @kind='group' or @kind='file'][compoundname='mgr_db' or compoundname='mgr_db::Connection' or compoundname='mgr_db::Query' or compoundname='isp_api' or compoundname='ispapi_common.h'])">
-<!--xsl:for-each select="compounddef[@kind='class' or @kind='namespace' or @kind='struct' or @kind='group']"-->
+<!--xsl:for-each select="(compounddef[@kind='class' or @kind='namespace' or @kind='struct' or @kind='group' or @kind='file'][compoundname='mgr_db' or compoundname='mgr_db::Connection' or compoundname='mgr_db::Query' or compoundname='isp_api' or compoundname='ispapi_common.h'])"-->
+<xsl:for-each select="compounddef[@kind='class' or @kind='namespace' or @kind='struct' or @kind='group' or @kind='file']">
 	<xsl:variable name="name"><xsl:value-of select="compoundname"/></xsl:variable>
 	<xsl:variable name="classname">
 		<xsl:choose>
@@ -700,6 +698,24 @@
 
 	<!-- Макросы -->
 	<xsl:variable name="define" select="sectiondef/memberdef[@prot='public' and (@kind='define')]"/>
+
+	<!-- Родители -->
+	<xsl:variable name="parents" select="basecompoundref"/>
+
+	<!-- Потомки -->
+	<xsl:variable name="children" select="derivedcompoundref"/>
+
+	<xsl:if test="$parents">
+		<xsl:value-of select="$newline"/><xsl:text>'''Родители:'''</xsl:text><xsl:value-of select="$newline"/>
+		<xsl:apply-templates select="$parents"/>
+		<xsl:value-of select="$newline"/>
+	</xsl:if>
+
+	<xsl:if test="$children">
+		<xsl:value-of select="$newline"/><xsl:text>'''Потомки:'''</xsl:text><xsl:value-of select="$newline"/>
+		<xsl:apply-templates select="$children"/>
+		<xsl:value-of select="$newline"/>
+	</xsl:if>
 
 	<xsl:if test="$define">
 		<xsl:value-of select="$newline"/><xsl:text>== Макросы ==</xsl:text><xsl:value-of select="$newline"/>
@@ -841,6 +857,7 @@
 		</xsl:when>
 	</xsl:choose>
 	<xsl:text>]]</xsl:text>
+	<xsl:text>[[Category:autogenerate]]</xsl:text>
 	</text>
     </page>
   </xsl:for-each>
