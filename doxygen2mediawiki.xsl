@@ -55,6 +55,9 @@
 				<xsl:with-param name="by" select="'&#38;&#35;160;'"/>
 			</xsl:call-template>
 		</xsl:when>
+		<xsl:when test="(name(..)='derivedcompoundref' or name(..)='basecompoundref') and contains($text, '&lt;')">
+			<xsl:value-of select="substring-before($text, '&lt;')"/>
+		</xsl:when>
 		<xsl:otherwise>
 			<xsl:value-of select="$text"/>
 		</xsl:otherwise>
@@ -224,8 +227,11 @@
 <xsl:template match="basecompoundref | derivedcompoundref">
 	<xsl:value-of select="$newline"/>
 	<xsl:text>* </xsl:text>
-	<xsl:call-template name="ref_class">
-		<xsl:with-param name="linktoname" select="."/>
+	<xsl:variable name="linktoname">
+		<xsl:apply-templates/>
+	</xsl:variable>
+	<xsl:call-template name="ref_class" select=".">
+		<xsl:with-param name="linktoname" select="$linktoname"/>
 		<xsl:with-param name="type" select="'class'"/>
 	</xsl:call-template>
 	<xsl:value-of select="$newline"/>
@@ -367,20 +373,20 @@
 </xsl:template>
 
 <xsl:template match="parameterlist[@kind='param']">
-	<!--xsl:value-of select="$newline"/-->
+	<xsl:value-of select="$newline"/>
 	<xsl:text>'''Аргументы:'''</xsl:text><xsl:value-of select="$newline"/>
 	<xsl:text>{|</xsl:text><xsl:value-of select="$newline"/>
 	<xsl:for-each select="parameteritem">
 		<xsl:text>|-</xsl:text>
-		<!--xsl:value-of select="$newline"/-->
+		<xsl:value-of select="$newline"/>
 		<xsl:apply-templates select="."/>
-		<!--xsl:value-of select="$newline"/-->
+		<xsl:value-of select="$newline"/>
 	</xsl:for-each>
 	<xsl:text>|}</xsl:text>
 </xsl:template>
 
 <xsl:template match="listitem">
-	<!--xsl:value-of select="$newline"/-->
+	<xsl:value-of select="$newline"/>
 	<xsl:for-each select="ancestor::listitem">
 		<xsl:text>*</xsl:text>
 	</xsl:for-each>
@@ -390,12 +396,8 @@
 </xsl:template>
 
 <xsl:template match="itemizedlist">
-	<!--xsl:value-of select="$newline"/>
-	<xsl:text>{| width="100%" align="right"</xsl:text-->
 	<xsl:value-of select="$newline"/>
 	<xsl:apply-templates/>
-	<!--xsl:value-of select="$newline"/>
-	<xsl:text>|}</xsl:text-->
 </xsl:template>
 
 <xsl:template match="memberdef[@kind='function' or @kind='variable' or @kind='typedef' or @kind='define']">
@@ -510,11 +512,26 @@
 	<xsl:text> | width="100%" valign="top" | </xsl:text>
 </xsl:template>
 
+<xsl:template match="templateparamlist">
+	<xsl:for-each select="param">
+		<xsl:text>''</xsl:text>
+		<xsl:text>template&#160;&lt;</xsl:text>
+		<xsl:call-template name="replace-all">
+			<xsl:with-param name="text" select="."/>
+			<xsl:with-param name="replace" select="' '"/>
+			<xsl:with-param name="by" select="'&#160;'"/>
+		</xsl:call-template>
+		<xsl:text>&gt;''</xsl:text>
+		<xsl:value-of select="$newline"/>
+	</xsl:for-each>
+</xsl:template>
+
 <xsl:template name="class-short">
 	<xsl:variable name="refid" select="@refid"/>
 	<xsl:variable name="pclass" select="//compounddef[@id=$refid]"/>
 	<xsl:variable name="ptype" select="$pclass/@kind"/>
 	<xsl:call-template name="short-table-head"/>
+	<xsl:apply-templates select="templateparamlist"/>
 	<xsl:value-of select="$ptype"/><xsl:value-of select="$newline"/>
 	<xsl:call-template name="short-table-middle"/>
 	<xsl:call-template name="ref_class" select=".">
@@ -529,17 +546,9 @@
 <xsl:template name="func-short">
 	<xsl:param name="type"/>
 	<xsl:call-template name="short-table-head"/>
-	<xsl:for-each select="templateparamlist/param">
-		<xsl:text>''</xsl:text>
-		<xsl:text>template&#160;&lt;</xsl:text>
-		<xsl:call-template name="replace-all">
-			<xsl:with-param name="text" select="."/>
-			<xsl:with-param name="replace" select="' '"/>
-			<xsl:with-param name="by" select="'&#160;'"/>
-		</xsl:call-template>
-		<xsl:text>&gt;''</xsl:text>
-		<xsl:value-of select="$newline"/>
-	</xsl:for-each>
+
+	<xsl:apply-templates select="templateparamlist"/>
+
 	<xsl:if test="$type='typedef'">
 		<xsl:text>''typedef''</xsl:text>
 		<xsl:text>&#160;</xsl:text>
@@ -642,7 +651,7 @@
 	</title>
 	<text>
 	<xsl:choose>
-		<xsl:when test="@kind='class'">
+		<xsl:when test="@kind='class' and not(templateparamlist)">
 			<xsl:text>'''Класс </xsl:text><xsl:value-of select="$name"/><xsl:text>'''</xsl:text>
 			<xsl:if test="@abstract='yes'">
 				<xsl:value-of select="$newline"/><xsl:value-of select="$newline"/>
@@ -783,8 +792,12 @@
 		</xsl:call-template>
 	</xsl:if>
 
-	<xsl:if test="detaileddescription/para">
-		<xsl:value-of select="$newline"/><xsl:text>== Описание класса ==</xsl:text><xsl:value-of select="$newline"/>
+	<xsl:if test="@kind='class' or detaileddescription/para">
+		<xsl:value-of select="$newline"/><xsl:text>== Описание ==</xsl:text><xsl:value-of select="$newline"/>
+			<xsl:apply-templates select="templateparamlist"/>
+			<xsl:value-of select="@kind"/>
+			<xsl:text> '''</xsl:text><xsl:value-of select="$name"/><xsl:text>'''</xsl:text>
+			<xsl:value-of select="$newline"/>
 		<xsl:apply-templates select="detaileddescription/para" />
 	</xsl:if>
 
@@ -865,8 +878,8 @@
 </xsl:template>
 
 
-<!--xsl:strip-space elements="*"/>
-<xsl:preserve-space elements="type"/-->
+<xsl:strip-space elements="*"/>
 <xsl:strip-space elements="parameternamelist"/>
+<xsl:preserve-space elements="type para"/>
 
 </xsl:stylesheet> 

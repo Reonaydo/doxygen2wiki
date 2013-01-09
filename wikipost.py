@@ -8,7 +8,7 @@ import wikitools
 import sys
 
 
-class WikiPost():
+class MediaWiki():
 	'''Класс для работы c wiki'''
 
 	url = ''
@@ -51,6 +51,19 @@ class WikiPost():
 		'''Постим страницу'''
 		token = self.getToken(pagename)
 		params = {'action':'edit', 'title':pagename, 'text':pagetext, 'recreate':1, 'token':token}
+		req = wikitools.api.APIRequest(self.site, params)  
+		res = req.query(querycontinue=False)
+		if not res:
+			print('Response is empty')
+			sys.exit(1)
+		if not res.get('edit').get('result') == u'Success':
+			print(res)
+			sys.exit(1)
+	
+	def delete(self, pagename):
+		'''Удаляем страницу'''
+		token = self.getToken(pagename, 'delete')
+		params = {'action':'delete', 'title':pagename, 'token':token}
 		req = wikitools.api.APIRequest(self.site, params)  
 		res = req.query(querycontinue=False)
 		if not res:

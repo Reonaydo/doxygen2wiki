@@ -6,13 +6,13 @@ WIKI_PASS='2ebrfls93t'
 WIKI_USER='admin'
 WIKI_URL='http://wiki.reonaydo.org/api.php'
 
-from wikipost import WikiPost
+from wikipost import MediaWiki
 import xml.etree.cElementTree as etree
 import sys
 import re
 
 doc = etree.parse(sys.stdin).getroot()
-wiki = WikiPost(WIKI_URL, WIKI_USER, WIKI_PASS)
+wiki = MediaWiki(WIKI_URL, WIKI_USER, WIKI_PASS)
 
 def getElemText(tag):
 	try:
@@ -26,6 +26,7 @@ def getElemText(tag):
 		text = re.sub('(^<.+?>)|(<\/.+?>)$', '', etree.tostring(tag, encoding='utf-8').decode('utf-8'))
 		return text
 
+pagelist = []
 
 for page in doc.findall('pages/page'):
 #	if page.find('title').text not in [
@@ -34,6 +35,7 @@ for page in doc.findall('pages/page'):
 #		'Namespace_isp_api', 'File_ispapi_common.h'
 #		]:
 #		continue
-
+	title = page.find('title').text
 	print('Posting page %s' % page.find('title').text)
 	wiki.post(page.find('title').text, getElemText(page.find('text')))
+	pagelist.append(title)
