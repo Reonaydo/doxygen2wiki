@@ -30,7 +30,8 @@ def getElemText(tag):
 for page in doc.findall('pages/page'):
 	if page.find('title').text not in [
 		'Class_mgr_proc::Execute', 'Namespace_mgr_proc', 'Class_ResHandle', 'Struct_mgr_dns::ConnectionParams', 
-		'Namespace_mgr_db', 'Class_mgr_db::Cache', 'Group_mgr_db' 
+		'Namespace_mgr_db', 'Class_mgr_db::Cache', 'Group_mgr_db', 'Class_mgr_db::Query', 'Class_mgr_db::Connection',
+		'Namespace_isp_api', 'File_ispapi_common.h'
 		]:
 		continue
 

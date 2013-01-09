@@ -61,6 +61,10 @@
 	</xsl:choose>
 </xsl:template>
 
+<!--xsl:template match="type[not(text)]">
+	<xsl:if test="child::*"></xsl:if>
+</xsl:template-->
+
 
 <xsl:template name="reftype">
 	<xsl:param name="type"/>
@@ -76,6 +80,9 @@
 		</xsl:when>
 		<xsl:when test="$type='namespace'">
 			<xsl:text>Namespace</xsl:text>
+		</xsl:when>
+		<xsl:when test="$type='file'">
+			<xsl:text>File</xsl:text>
 		</xsl:when>
 	</xsl:choose>
 </xsl:template>
@@ -256,7 +263,7 @@
 			</xsl:call-template>
 		</xsl:otherwise>
 	</xsl:choose>
-	<xsl:value-of select="$newline"/>
+	<!--xsl:value-of select="$newline"/-->
 </xsl:template>
 
 <xsl:template match="ulink">[<xsl:value-of select="@url"/><xsl:text> </xsl:text><xsl:value-of select="."/>]</xsl:template>
@@ -280,11 +287,11 @@
 	<xsl:text>&gt;&lt;/nowiki&gt;&lt;/code&gt;</xsl:text>
 </xsl:template>
 
-<xsl:template match="name">
+<!--xsl:template match="name">
 	<xsl:if test=".!='@0'">
 	<xsl:apply-templates /><xsl:text> </xsl:text>
 	</xsl:if>
-</xsl:template>
+</xsl:template-->
 
 <xsl:template match="enumvalue">
 	<xsl:value-of select="$newline"/>
@@ -350,14 +357,14 @@
 </xsl:template>
 
 <xsl:template match="parameterlist[@kind='param']">
-	<xsl:value-of select="$newline"/>
+	<!--xsl:value-of select="$newline"/-->
 	<xsl:text>'''Аргументы:'''</xsl:text><xsl:value-of select="$newline"/>
 	<xsl:text>{|</xsl:text><xsl:value-of select="$newline"/>
 	<xsl:for-each select="parameteritem">
 		<xsl:text>|-</xsl:text>
-		<xsl:value-of select="$newline"/>
+		<!--xsl:value-of select="$newline"/-->
 		<xsl:apply-templates select="."/>
-		<xsl:value-of select="$newline"/>
+		<!--xsl:value-of select="$newline"/-->
 	</xsl:for-each>
 	<xsl:text>|}</xsl:text>
 </xsl:template>
@@ -381,11 +388,15 @@
 	<xsl:text>|}</xsl:text-->
 </xsl:template>
 
-<xsl:template match="memberdef[@kind='function' or @kind='variable' or @kind='typedef']">
+<xsl:template match="memberdef[@kind='function' or @kind='variable' or @kind='typedef' or @kind='define']">
 	<xsl:param name="pname" />
 	<xsl:value-of select="$newline"/>
 	<xsl:text>=== </xsl:text>
 	<xsl:if test="@kind='typedef'">''typedef''&#160;</xsl:if>
+	<xsl:if test="@kind='define'">
+		<xsl:text>#define</xsl:text>
+		<xsl:text>&#160;</xsl:text>
+	</xsl:if>
 	<xsl:apply-templates select="type"/>
 	<xsl:text>'''{{anchor|</xsl:text>
 	<xsl:call-template name="refanchor"><xsl:with-param name="text" select="@id"/></xsl:call-template>
@@ -398,10 +409,16 @@
 	<!--парсим параметры и делаем ссылки-->
 	<xsl:call-template name="paramlist"/>
 
+	<xsl:apply-templates select="exceptions"/>
+
 	<xsl:text> ===</xsl:text>
 	<xsl:value-of select="$newline"/>
 	<xsl:if test="@inline='yes'">
-		<xsl:text>''Данная функция является inline функцией''</xsl:text>
+		<xsl:text>''Данная функция/метод является inline функцией''</xsl:text>
+		<xsl:value-of select="$newline"/>
+	</xsl:if>
+	<xsl:if test="@virt='pure-virtual' or @virt='virtual'">
+		<xsl:text>''Данная функция/метод является virtual функцией''</xsl:text>
 		<xsl:value-of select="$newline"/>
 	</xsl:if>
 	<xsl:if test="briefdescription/para">
@@ -430,9 +447,11 @@
 		<xsl:text>, </xsl:text>
 	</xsl:for-each>
 	<xsl:text> }</xsl:text>
-	<xsl:value-of select="$newline"/>
-	<xsl:value-of select="$newline"/>
-	<xsl:apply-templates select="briefdescription"/>
+	<xsl:if test="briefdescription/para">
+		<xsl:value-of select="$newline"/>
+		<xsl:value-of select="$newline"/>
+		<xsl:apply-templates select="briefdescription"/>
+	</xsl:if>
 </xsl:template>
 
 <xsl:template match="defval">
@@ -513,6 +532,15 @@
 		<xsl:text>''typedef''</xsl:text>
 		<xsl:text>&#160;</xsl:text>
 	</xsl:if>
+	<xsl:if test="$type='define'">
+		<xsl:text>''typedef''</xsl:text>
+		<xsl:text>&#160;</xsl:text>
+	</xsl:if>
+
+	<xsl:if test="$type='function' and (@virt='pure-virtual' or @virt='virtual')">
+		<xsl:text>''virtual''</xsl:text>
+		<xsl:text>&#160;</xsl:text>
+	</xsl:if>
 	<xsl:apply-templates select="type"/>
 	<xsl:call-template name="short-table-middle"/>
 	<xsl:text>'''[[#</xsl:text>
@@ -521,7 +549,9 @@
 	<xsl:text>]]''' </xsl:text>
 
 	<xsl:call-template name="paramlist"/>
-		
+	
+	<xsl:value-of select="exceptions"/>
+
 	<xsl:value-of select="$newline"/>
 	<xsl:if test="briefdescription/para">
 		<xsl:apply-templates select="briefdescription/para"/>
@@ -579,8 +609,8 @@
 
 <xsl:template match="/doxygen">
 <doc><pages type="Classes">
-<!--xsl:for-each select="(compounddef[@kind='class' or @kind='namespace' or @kind='struct' or @kind='group'][compoundname='mgr_db' or compoundname='mgr_proc::Execute'])"-->
-<xsl:for-each select="compounddef[@kind='class' or @kind='namespace' or @kind='struct' or @kind='group']">
+<xsl:for-each select="(compounddef[@kind='class' or @kind='namespace' or @kind='struct' or @kind='group' or @kind='file'][compoundname='mgr_db' or compoundname='mgr_db::Connection' or compoundname='mgr_db::Query' or compoundname='isp_api' or compoundname='ispapi_common.h'])">
+<!--xsl:for-each select="compounddef[@kind='class' or @kind='namespace' or @kind='struct' or @kind='group']"-->
 	<xsl:variable name="name"><xsl:value-of select="compoundname"/></xsl:variable>
 	<xsl:variable name="classname">
 		<xsl:choose>
@@ -607,12 +637,19 @@
 		<xsl:when test="@kind='struct'">
 			<xsl:text>Struct_</xsl:text><xsl:value-of select="$name"/>
 		</xsl:when>
+		<xsl:when test="@kind='file'">
+			<xsl:text>File_</xsl:text><xsl:value-of select="$name"/>
+		</xsl:when>
 	</xsl:choose>
 	</title>
 	<text>
 	<xsl:choose>
 		<xsl:when test="@kind='class'">
 			<xsl:text>'''Класс </xsl:text><xsl:value-of select="$name"/><xsl:text>'''</xsl:text>
+			<xsl:if test="@abstract='yes'">
+				<xsl:value-of select="$newline"/><xsl:value-of select="$newline"/>
+				<xsl:text>''Данный класс является абстрактным''</xsl:text>
+			</xsl:if>
 		</xsl:when>
 		<xsl:when test="@kind='namespace'">
 			<xsl:text>'''Пространство имён </xsl:text><xsl:value-of select="$name"/><xsl:text>'''</xsl:text>
@@ -622,6 +659,9 @@
 		</xsl:when>
 		<xsl:when test="@kind='struct'">
 			<xsl:text>'''Структура </xsl:text><xsl:value-of select="$name"/><xsl:text>'''</xsl:text>
+		</xsl:when>
+		<xsl:when test="@kind='struct'">
+			<xsl:text>'''Файл </xsl:text><xsl:value-of select="$name"/><xsl:text>'''</xsl:text>
 		</xsl:when>
 	</xsl:choose>
 	<xsl:value-of select="$newline"/><xsl:value-of select="$newline"/>
@@ -658,6 +698,17 @@
 	<!-- Данные -->
 	<xsl:variable name="data" select="sectiondef/memberdef[@prot='public' and (@kind='variable')]"/>
 
+	<!-- Макросы -->
+	<xsl:variable name="define" select="sectiondef/memberdef[@prot='public' and (@kind='define')]"/>
+
+	<xsl:if test="$define">
+		<xsl:value-of select="$newline"/><xsl:text>== Макросы ==</xsl:text><xsl:value-of select="$newline"/>
+		<xsl:call-template name="short-function-table">
+			<xsl:with-param name="type" select="'define'"/>
+			<xsl:with-param name="selectdef" select="$define"/>
+		</xsl:call-template>
+	</xsl:if>
+
 	<xsl:if test="$classes">
 		<xsl:value-of select="$newline"/><xsl:text>== Классы ==</xsl:text><xsl:value-of select="$newline"/>
 		<xsl:call-template name="short-function-table">
@@ -679,7 +730,7 @@
 		<xsl:value-of select="$newline"/><xsl:text>== Перечисления (кратко) ==</xsl:text><xsl:value-of select="$newline"/>
 		<xsl:for-each select="$enums">
 			<xsl:call-template name="enum-short" />
-			<xsl:if test="position() != last()"><xsl:value-of select="$newline"/><xsl:text>----</xsl:text><xsl:value-of select="$newline"/></xsl:if>
+			<!--xsl:if test="position() != last()"><xsl:value-of select="$newline"/><xsl:text>-1-1-1-</xsl:text><xsl:value-of select="$newline"/></xsl:if-->
 		</xsl:for-each>
 	</xsl:if>
 
@@ -765,6 +816,31 @@
 		<xsl:apply-templates select="$types" />
 	</xsl:if>
 
+	<xsl:if test="$define">
+		<xsl:value-of select="$newline"/><xsl:text>== Макросы ==</xsl:text><xsl:value-of select="$newline"/>
+		<xsl:apply-templates select="$define" />
+	</xsl:if>
+
+	<xsl:value-of select="$newline"/>
+	<xsl:text>[[Category:</xsl:text>
+	<xsl:choose>
+		<xsl:when test="@kind='class'">
+			<xsl:text>Классы</xsl:text>
+		</xsl:when>
+		<xsl:when test="@kind='namespace'">
+			<xsl:text>Пространства имён</xsl:text>
+		</xsl:when>
+		<xsl:when test="@kind='group'">
+			<xsl:text>Группы</xsl:text>
+		</xsl:when>
+		<xsl:when test="@kind='struct'">
+			<xsl:text>Классы</xsl:text>
+		</xsl:when>
+		<xsl:when test="@kind='file'">
+			<xsl:text>Файлы</xsl:text>
+		</xsl:when>
+	</xsl:choose>
+	<xsl:text>]]</xsl:text>
 	</text>
     </page>
   </xsl:for-each>
@@ -772,6 +848,8 @@
 </xsl:template>
 
 
-<xsl:strip-space elements="*"/>
+<!--xsl:strip-space elements="*"/>
+<xsl:preserve-space elements="type"/-->
+<xsl:strip-space elements="parameternamelist"/>
 
 </xsl:stylesheet> 
