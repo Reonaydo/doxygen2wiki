@@ -446,6 +446,7 @@
 </xsl:template>
 
 <xsl:template name="enum-short">
+	<xsl:value-of select="$newline"/>
 	<xsl:text>'''Перечисление </xsl:text>
 	<xsl:text>[[#</xsl:text>
 	<xsl:call-template name="refanchor"><xsl:with-param name="text" select="@id"/></xsl:call-template>
