@@ -4,17 +4,15 @@
 
 #WIKI_PASS='2ebrfls93t'
 #WIKI_USER='admin'
-WIKI_PASS='q1w2e3'
-WIKI_USER='postbot'
-WIKI_URL='http://wiki.reonaydo.org/api.php'
+CONFNAME='doxygen2wiki.conf'
 
 from wikipost import MediaWiki
-import xml.etree.cElementTree as etree
-import sys
+#import xml.etree.cElementTree as etree
+from lxml import etree
+import sys, os
 import re
+from ConfigParser import ConfigParser
 
-doc = etree.parse(sys.stdin).getroot()
-wiki = MediaWiki(WIKI_URL, WIKI_USER, WIKI_PASS)
 
 def getElemText(tag):
 	try:
@@ -30,7 +28,38 @@ def getElemText(tag):
 
 pagelist = []
 
-for page in doc.findall('pages/page'):
+config = ConfigParser()
+config.optionxform = str
+config.read(CONFNAME)
+
+WIKI_PASS = config.get('wiki', 'password')
+WIKI_USER = config.get('wiki', 'user')
+WIKI_URL = config.get('wiki', 'url')
+
+XSL_FILE = config.get('xml', 'xslfile')
+DOXYGEN_ALL_XML = config.get('xml', 'doxygenallxml')
+COMPLETED_XML = config.get('xml', 'completedxml')
+DOXYGEN_PATH = config.get('xml', 'doxygenxmlpath')
+if not XSL_FILE:
+	XSL_FILE = 'doxygen2mediawiki.xsl'
+
+transform = etree.XSLT(etree.parse(XSL_FILE))
+
+if COMPLETED_XML:
+	result = etree.parse(COMPLETED_XML)
+elif DOXYGEN_ALL_XML:
+	doc = etree.parse(DOXYGEN_ALL_XML)
+	result = transform(doc)
+else:
+	combine = etree.XSLT(etree.parse(os.path.join(DOXYGEN_PATH, 'combine.xslt')))
+	indexdoc = etree.parse(os.path.join(DOXYGEN_PATH, 'index.xml'))
+	doc = combine(indexdoc)
+	result = transform(doc)
+	
+#doc = etree.parse(sys.stdin).getroot()
+wiki = MediaWiki(WIKI_URL, WIKI_USER, WIKI_PASS)
+
+for page in result.findall('pages/page'):
 #	if page.find('title').text not in [
 #		'Class_mgr_proc::Execute', 'Namespace_mgr_proc', 'Class_ResHandle', 'Struct_mgr_dns::ConnectionParams', 
 #		'Namespace_mgr_db', 'Class_mgr_db::Cache', 'Group_mgr_db', 'Class_mgr_db::Query', 'Class_mgr_db::Connection',

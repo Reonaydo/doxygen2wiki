@@ -1,0 +1,10 @@
+[wiki]
+password = PASSWD
+user = USER [user must have writeapi, create and delete permissions]
+url = http://wiki.site.site/api.php
+
+[xml]
+xslfile = doxygen2mediawiki.xsl
+doxygenallxml = all.xml
+completedxml = preset.xml
+doxygenxmlpath = /tmp/doc/xml

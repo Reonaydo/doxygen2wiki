@@ -2,3 +2,4 @@
 all.xml
 *.*~
 *.pyc
+doxygen2wiki.conf
