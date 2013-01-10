@@ -60,12 +60,6 @@ else:
 wiki = MediaWiki(WIKI_URL, WIKI_USER, WIKI_PASS)
 
 for page in result.findall('pages/page'):
-#	if page.find('title').text not in [
-#		'Class_mgr_proc::Execute', 'Namespace_mgr_proc', 'Class_ResHandle', 'Struct_mgr_dns::ConnectionParams', 
-#		'Namespace_mgr_db', 'Class_mgr_db::Cache', 'Group_mgr_db', 'Class_mgr_db::Query', 'Class_mgr_db::Connection',
-#		'Namespace_isp_api', 'File_ispapi_common.h'
-#		]:
-#		continue
 	title = page.find('title').text.replace('_', ' ')
 	print('Posting page %s' % title)
 	wiki.post(page.find('title').text, getElemText(page.find('text')))

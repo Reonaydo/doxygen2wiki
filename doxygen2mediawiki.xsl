@@ -93,13 +93,21 @@
 <xsl:template name="ref_class">
 	<xsl:param name="linktoname" />
 	<xsl:param name="type" />
+	<xsl:param name="name"/>
 	<xsl:variable name="ltype">
 		<xsl:call-template name="reftype"><xsl:with-param name="type" select="$type"/></xsl:call-template>
 	</xsl:variable>
 	<xsl:text>[[</xsl:text><xsl:value-of select="$ltype"/><xsl:text>_</xsl:text>
 	<xsl:value-of select="$linktoname" />
 	<xsl:text>|</xsl:text>
-	<xsl:value-of select="." />
+	<xsl:choose>
+		<xsl:when test="$name">
+			<xsl:value-of select="$name" />
+		</xsl:when>
+		<xsl:otherwise>
+			<xsl:value-of select="." />
+		</xsl:otherwise>
+	</xsl:choose>
 	<xsl:text>]]</xsl:text>
 </xsl:template>
 
@@ -654,6 +662,17 @@
 	<text>
 	<xsl:choose>
 		<xsl:when test="@kind='class' and not(templateparamlist)">
+			<xsl:variable name="id"><xsl:value-of select="@id"/></xsl:variable>
+			<xsl:variable name="parentgroup" select="//compounddef[@kind='group' and innerclass[@refid=$id]]"/>
+			<xsl:if test="$parentgroup!=''">
+				<xsl:call-template name="ref_class">
+					<xsl:with-param name="name" select="$parentgroup/title"/>
+					<xsl:with-param name="linktoname" select="$parentgroup/compoundname"/>
+					<xsl:with-param name="type" select="'group'"/>
+				</xsl:call-template>
+				<xsl:value-of select="$newline"/>
+				<xsl:value-of select="$newline"/>
+			</xsl:if>
 			<xsl:text>'''Класс </xsl:text><xsl:value-of select="$name"/><xsl:text>'''</xsl:text>
 			<xsl:if test="@abstract='yes'">
 				<xsl:value-of select="$newline"/><xsl:value-of select="$newline"/>
@@ -661,6 +680,17 @@
 			</xsl:if>
 		</xsl:when>
 		<xsl:when test="@kind='class' and templateparamlist!=''">
+			<xsl:variable name="id"><xsl:value-of select="@id"/></xsl:variable>
+			<xsl:variable name="parentgroup" select="//compounddef[@kind='group' and innerclass[@refid=$id]]"/>
+			<xsl:if test="$parentgroup!=''">
+				<xsl:call-template name="ref_class">
+					<xsl:with-param name="name" select="$parentgroup/title"/>
+					<xsl:with-param name="linktoname" select="$parentgroup/compoundname"/>
+					<xsl:with-param name="type" select="'group'"/>
+				</xsl:call-template>
+				<xsl:value-of select="$newline"/>
+				<xsl:value-of select="$newline"/>
+			</xsl:if>
 			<xsl:text>'''Шаблон класса </xsl:text><xsl:value-of select="$name"/><xsl:text>'''</xsl:text>
 			<xsl:if test="@abstract='yes'">
 				<xsl:value-of select="$newline"/><xsl:value-of select="$newline"/>
