@@ -2,8 +2,10 @@
 #-*- coding: utf8 -*-
 
 
-WIKI_PASS='2ebrfls93t'
-WIKI_USER='admin'
+#WIKI_PASS='2ebrfls93t'
+#WIKI_USER='admin'
+WIKI_PASS='q1w2e3'
+WIKI_USER='postbot'
 WIKI_URL='http://wiki.reonaydo.org/api.php'
 
 from wikipost import MediaWiki
@@ -35,7 +37,10 @@ for page in doc.findall('pages/page'):
 #		'Namespace_isp_api', 'File_ispapi_common.h'
 #		]:
 #		continue
-	title = page.find('title').text
-	print('Posting page %s' % page.find('title').text)
+	title = page.find('title').text.replace('_', ' ')
+	print('Posting page %s' % title)
 	wiki.post(page.find('title').text, getElemText(page.find('text')))
 	pagelist.append(title)
+for title in list(set(wiki.get_list_in_category('autogenerate')) - set(pagelist)):
+	print('Deleting page %s' % title)
+	wiki.delete(title)

@@ -464,6 +464,7 @@
 		<xsl:value-of select="$newline"/>
 		<xsl:value-of select="$newline"/>
 		<xsl:apply-templates select="briefdescription"/>
+		<xsl:value-of select="$newline"/>
 	</xsl:if>
 </xsl:template>
 
@@ -653,6 +654,13 @@
 	<xsl:choose>
 		<xsl:when test="@kind='class' and not(templateparamlist)">
 			<xsl:text>'''Класс </xsl:text><xsl:value-of select="$name"/><xsl:text>'''</xsl:text>
+			<xsl:if test="@abstract='yes'">
+				<xsl:value-of select="$newline"/><xsl:value-of select="$newline"/>
+				<xsl:text>''Данный класс является абстрактным''</xsl:text>
+			</xsl:if>
+		</xsl:when>
+		<xsl:when test="@kind='class' and templateparamlist!=''">
+			<xsl:text>'''Шаблон класса </xsl:text><xsl:value-of select="$name"/><xsl:text>'''</xsl:text>
 			<xsl:if test="@abstract='yes'">
 				<xsl:value-of select="$newline"/><xsl:value-of select="$newline"/>
 				<xsl:text>''Данный класс является абстрактным''</xsl:text>
