@@ -321,9 +321,9 @@
 	<xsl:value-of select="$newline"/>
 	<xsl:text>*</xsl:text>
 	<!--xsl:text> </xsl:text-->
-	<xsl:text>{{anchor|</xsl:text>
+	<xsl:text>&lt;span id="</xsl:text>
 	<xsl:call-template name="refanchor"><xsl:with-param name="text" select="@id"/></xsl:call-template>
-	<xsl:text>}}</xsl:text>
+	<xsl:text>"&gt;&lt;/span&gt;</xsl:text>
 	<xsl:text>'''&lt;code&gt;</xsl:text>
 	<xsl:apply-templates select="name|initializer"/>
 	<xsl:text>&lt;/code&gt;'''</xsl:text>
@@ -334,9 +334,9 @@
 
 <xsl:template match="memberdef[@kind='enum']">
 	<xsl:value-of select="$newline"/>
-	<xsl:text>'''{{anchor|</xsl:text>
+	<xsl:text>&lt;span id="</xsl:text>
 	<xsl:call-template name="refanchor"><xsl:with-param name="text" select="@id"/></xsl:call-template>
-	<xsl:text>}}</xsl:text>
+	<xsl:text>"&gt;&lt;/span&gt;</xsl:text>
 	<xsl:value-of select="name"/>
 	<xsl:text>''' </xsl:text>
 	<xsl:apply-templates select="briefdescription/para" />
@@ -418,9 +418,9 @@
 		<xsl:text>&#160;</xsl:text>
 	</xsl:if>
 	<xsl:apply-templates select="type"/>
-	<xsl:text>'''{{anchor|</xsl:text>
+	<xsl:text>&lt;span id="</xsl:text>
 	<xsl:call-template name="refanchor"><xsl:with-param name="text" select="@id"/></xsl:call-template>
-	<xsl:text>}}</xsl:text>
+	<xsl:text>"&gt;&lt;/span&gt;</xsl:text>
 	<!--xsl:value-of select="ancestor::compounddef/compoundname" />
 	<xsl:text>::</xsl:text-->
 	<xsl:value-of select="name"/>
