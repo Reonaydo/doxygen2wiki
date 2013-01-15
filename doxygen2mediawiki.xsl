@@ -9,7 +9,13 @@
 </xsl:variable>
 
 <xsl:template match="para">
-	<xsl:apply-templates />
+	<xsl:if test="not(ancestor::simplesect)">
+		<xsl:text>&lt;p&gt;</xsl:text>
+	</xsl:if>
+		<xsl:apply-templates />
+	<xsl:if test="not(ancestor::simplesect)">
+		<xsl:text>&lt;/p&gt;</xsl:text>
+	</xsl:if>
 </xsl:template>
 
 <xsl:template match="referencedby">
@@ -18,6 +24,12 @@
 
 <xsl:template match="references">
 	<!--xsl:text></xsl:text-->
+</xsl:template>
+
+<xsl:template match="simplesectsep">
+	<xsl:value-of select="$newline"/>
+</xsl:template>
+<xsl:template match="linebreak">
 </xsl:template>
 
 <xsl:template match="text()">
@@ -417,6 +429,11 @@
 		<xsl:text>#define</xsl:text>
 		<xsl:text>&#160;</xsl:text>
 	</xsl:if>
+	
+	<xsl:if test="@virt='pure-virtual' or @virt='virtual'">
+		<xsl:text>virtual </xsl:text>
+	</xsl:if>
+
 	<xsl:apply-templates select="type"/>
 	<xsl:text>&lt;span id="</xsl:text>
 	<xsl:call-template name="refanchor"><xsl:with-param name="text" select="@id"/></xsl:call-template>
@@ -435,11 +452,18 @@
 	<xsl:text> ===</xsl:text>
 	<xsl:value-of select="$newline"/>
 	<xsl:if test="@inline='yes'">
+		<xsl:value-of select="$newline"/>
 		<xsl:text>''Данная функция/метод является inline функцией''</xsl:text>
 		<xsl:value-of select="$newline"/>
 	</xsl:if>
-	<xsl:if test="@virt='pure-virtual' or @virt='virtual'">
+	<!--xsl:if test="@virt='pure-virtual' or @virt='virtual'">
+		<xsl:value-of select="$newline"/>
 		<xsl:text>''Данная функция/метод является virtual функцией''</xsl:text>
+		<xsl:value-of select="$newline"/>
+	</xsl:if-->
+	<xsl:if test="@prot='private'">
+		<xsl:value-of select="$newline"/>
+		<xsl:text>''Данный метод является приватным''</xsl:text>
 		<xsl:value-of select="$newline"/>
 	</xsl:if>
 	<xsl:if test="briefdescription/para">
@@ -823,6 +847,14 @@
 		</xsl:for-each>
 	</xsl:if>
 
+	<xsl:if test="sectiondef[@kind='private-func']">
+		<xsl:value-of select="$newline"/><xsl:text>== Приватные члены (кратко) ==</xsl:text><xsl:value-of select="$newline"/>
+		<xsl:call-template name="short-function-table">
+			<xsl:with-param name="type" select="'function'"/>
+			<xsl:with-param name="selectdef" select="sectiondef[@kind='private-func']/memberdef[@prot='private' and @virt='virtual' and (briefdescription!='' or detaileddescription!='')]"/>
+		</xsl:call-template>
+	</xsl:if>
+
 	<xsl:if test="$stattribs">
 		<xsl:value-of select="$newline"/><xsl:text>== Статические открытые данные (кратко) ==</xsl:text><xsl:value-of select="$newline"/>
 		<xsl:call-template name="short-function-table">
@@ -833,9 +865,12 @@
 
 	<xsl:if test="@kind='class' or detaileddescription/para">
 		<xsl:value-of select="$newline"/><xsl:text>== Описание ==</xsl:text><xsl:value-of select="$newline"/>
-			<xsl:apply-templates select="templateparamlist"/>
+			<xsl:if test="templateparamlist">
+				<xsl:apply-templates select="templateparamlist"/>
+			</xsl:if>
 			<xsl:value-of select="@kind"/>
 			<xsl:text> '''</xsl:text><xsl:value-of select="$name"/><xsl:text>'''</xsl:text>
+			<xsl:value-of select="$newline"/>
 			<xsl:value-of select="$newline"/>
 		<xsl:apply-templates select="detaileddescription/para" />
 	</xsl:if>
@@ -854,7 +889,7 @@
 		<xsl:apply-templates select="$constructs" />
 	</xsl:if>
 
-	<xsl:if test="$functions">
+	<xsl:if test="$functions or sectiondef[@kind='private-func']">
 		<xsl:value-of select="$newline"/>
 		<xsl:choose>
 			<xsl:when test="@kind='class'">
@@ -866,6 +901,7 @@
 		</xsl:choose>
 		<xsl:value-of select="$newline"/>
 		<xsl:apply-templates select="$functions"/>
+		<xsl:apply-templates select="sectiondef[@kind='private-func']/memberdef[@prot='private' and @virt='virtual' and (briefdescription!='' or detaileddescription!='')]"/>
 	</xsl:if>
 
 	<!--xsl:if test="((sectiondef[@kind='public-attrib']) or (sectiondef[@kind='public-static-attrib']))">
@@ -917,8 +953,7 @@
 </xsl:template>
 
 
-<xsl:strip-space elements="*"/>
-<xsl:strip-space elements="parameternamelist"/>
-<xsl:preserve-space elements="type para"/>
+<xsl:strip-space elements="* parameternamelist para linebreak/"/>
+<xsl:preserve-space elements="type"/>
 
 </xsl:stylesheet> 
