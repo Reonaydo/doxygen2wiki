@@ -9,11 +9,11 @@
 </xsl:variable>
 
 <xsl:template match="para">
-	<xsl:if test="not(ancestor::simplesect)">
+	<xsl:if test="not(ancestor::simplesect or ancestor::para)">
 		<xsl:text>&lt;p&gt;</xsl:text>
 	</xsl:if>
 		<xsl:apply-templates />
-	<xsl:if test="not(ancestor::simplesect)">
+	<xsl:if test="not(ancestor::simplesect or ancestor::para)">
 		<xsl:text>&lt;/p&gt;</xsl:text>
 	</xsl:if>
 </xsl:template>
