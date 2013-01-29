@@ -308,10 +308,22 @@
 
 <xsl:template match="simplesect/title"></xsl:template>
 
-<xsl:template match="programlisting"><xsl:value-of select="$newline"/>&lt;code&gt;<xsl:apply-templates select="codeline"/><xsl:value-of select="$newline"/>&lt;/code&gt;</xsl:template>
+<xsl:template match="programlisting">
+	<xsl:value-of select="$newline"/>
+	<xsl:if test="(ancestor::simplesect or ancestor::para)">
+		<xsl:text>&lt;/p&gt;</xsl:text>
+	</xsl:if>
+		<xsl:apply-templates />
+	<xsl:text>&lt;code&gt;</xsl:text>
+	<xsl:apply-templates select="codeline"/><xsl:value-of select="$newline"/>
+	<xsl:text>&lt;/code&gt;</xsl:text>
+	<xsl:if test="(ancestor::simplesect or ancestor::para)">
+		<xsl:text>&lt;p&gt;</xsl:text>
+	</xsl:if>
+</xsl:template>
 
 <xsl:template match="codeline">
-	<xsl:value-of select="$newline"/><xsl:text> </xsl:text><xsl:apply-templates />
+	<xsl:value-of select="$newline"/><xsl:text> </xsl:text><xsl:apply-templates /><!--xsl:text>&lt;br/&gt;</xsl:text-->
 </xsl:template>
 
 <xsl:template match="highlight/sp"><xsl:text> </xsl:text></xsl:template>
@@ -650,7 +662,7 @@
 
 <xsl:template match="/doxygen">
 <doc><pages type="Classes">
-<!--xsl:for-each select="(compounddef[@kind='class' or @kind='namespace' or @kind='struct' or @kind='group' or @kind='file'][compoundname='mgr_db' or compoundname='mgr_db::Connection' or compoundname='mgr_db::Query' or compoundname='isp_api' or compoundname='ispapi_common.h'])"-->
+<!--xsl:for-each select="(compounddef[@kind='class' or @kind='namespace' or @kind='struct' or @kind='group' or @kind='file'][compoundname='mgr_db' or compoundname='isp_api::ListAction'])"-->
 <xsl:for-each select="compounddef[@kind='class' or @kind='namespace' or @kind='struct' or @kind='group' or @kind='file']">
 	<xsl:variable name="name"><xsl:value-of select="compoundname"/></xsl:variable>
 	<xsl:variable name="classname">
