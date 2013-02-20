@@ -662,7 +662,7 @@
 
 <xsl:template match="/doxygen">
 <doc><pages type="Classes">
-<!--xsl:for-each select="(compounddef[@kind='class' or @kind='namespace' or @kind='struct' or @kind='group' or @kind='file'][compoundname='mgr_db' or compoundname='isp_api::ListAction'])"-->
+<!--xsl:for-each select="(compounddef[@kind='class' or @kind='namespace' or @kind='struct' or @kind='group' or @kind='file'][compoundname='mgr_db' or compoundname='mgr_crypto::Cert'])"-->
 <xsl:for-each select="compounddef[@kind='class' or @kind='namespace' or @kind='struct' or @kind='group' or @kind='file']">
 	<xsl:variable name="name"><xsl:value-of select="compoundname"/></xsl:variable>
 	<xsl:variable name="classname">
@@ -760,28 +760,28 @@
 	<xsl:variable name="types" select="sectiondef/memberdef[@kind='typedef' and @prot='public']"/>
 
 	<!-- Аттрибуты -->
-	<xsl:variable name="attribs" select="sectiondef[@kind='public-attrib']/memberdef[@kind='variable' and @prot='public' and (not(@static='yes'))]"/>
+	<xsl:variable name="attribs" select="sectiondef[@kind='public-attrib']/memberdef[(briefdescription!='' or detaileddescription!='') and @kind='variable' and @prot='public' and (not(@static='yes'))]"/>
 
 	<!-- Статические аттрибуты -->
-	<xsl:variable name="stattribs" select="sectiondef[@kind='public-attrib' or @kind='public-static-attrib']/memberdef[@kind='variable' and @prot='public' and @static='yes']"/>
+	<xsl:variable name="stattribs" select="sectiondef[@kind='public-attrib' or @kind='public-static-attrib']/memberdef[(briefdescription!='' or detaileddescription!='') and @kind='variable' and @prot='public' and @static='yes']"/>
 
 	<!-- Переменные -->
-	<xsl:variable name="vars" select="sectiondef[@kind='var']/memberdef[@prot='public']"/>
+	<xsl:variable name="vars" select="sectiondef[@kind='var']/memberdef[(briefdescription!='' or detaileddescription!='') and @prot='public']"/>
 
 	<!-- Классы -->
 	<xsl:variable name="classes" select="innerclass | innergroup | innernamespace"/>
 
 	<!-- Конструкторы -->
-	<xsl:variable name="constructs" select="sectiondef[@kind='public-func']/memberdef[@kind='function'][(substring-after(name,'~')=$classname) or (name=$classname)]"/>
+	<xsl:variable name="constructs" select="sectiondef[@kind='public-func']/memberdef[(briefdescription!='' or detaileddescription!='') and @kind='function'][(substring-after(name,'~')=$classname) or (name=$classname)]"/>
 
 	<!-- Методы/функции -->
-	<xsl:variable name="functions" select="sectiondef[@kind='user-defined' or @kind='func' or @kind='public-func']/memberdef[@kind='function' and @prot='public'][(substring-after(name,'~')!=$classname) and (name!=$classname)]"/>
+	<xsl:variable name="functions" select="sectiondef[@kind='user-defined' or @kind='func' or @kind='public-func']/memberdef[(briefdescription!='' or detaileddescription!='') and @kind='function' and @prot='public'][(substring-after(name,'~')!=$classname) and (name!=$classname)]"/>
 
 	<!-- Данные -->
-	<xsl:variable name="data" select="sectiondef/memberdef[@prot='public' and (@kind='variable')]"/>
+	<xsl:variable name="data" select="sectiondef/memberdef[(briefdescription!='' or detaileddescription!='') and @prot='public' and (@kind='variable')]"/>
 
 	<!-- Макросы -->
-	<xsl:variable name="define" select="sectiondef/memberdef[@prot='public' and (@kind='define')]"/>
+	<xsl:variable name="define" select="sectiondef/memberdef[(briefdescription!='' or detaileddescription!='') and @prot='public' and (@kind='define')]"/>
 
 	<!-- Родители -->
 	<xsl:variable name="parents" select="basecompoundref"/>
@@ -846,7 +846,7 @@
 		<xsl:value-of select="$newline"/><xsl:text>== Открытые члены (кратко) ==</xsl:text><xsl:value-of select="$newline"/>
 		<xsl:call-template name="short-function-table">
 			<xsl:with-param name="type" select="'function'"/>
-			<xsl:with-param name="selectdef" select="sectiondef[@kind='public-func' or @kind='func']/memberdef[@prot='public']"/>
+			<xsl:with-param name="selectdef" select="sectiondef[@kind='public-func' or @kind='func']/memberdef[(briefdescription!='' or detaileddescription!='') and @prot='public']"/>
 		</xsl:call-template>
 		<xsl:for-each select="sectiondef[@kind='user-defined']">
 			<xsl:value-of select="$newline"/><xsl:text>=== </xsl:text><xsl:value-of select="header"/><xsl:text> ===</xsl:text><xsl:value-of select="$newline"/>
@@ -854,7 +854,7 @@
 			<xsl:value-of select="$newline"/>
 			<xsl:call-template name="short-function-table">
 				<xsl:with-param name="type" select="'function'"/>
-				<xsl:with-param name="selectdef" select="memberdef[@kind='function' and @prot='public']"/>
+				<xsl:with-param name="selectdef" select="memberdef[(briefdescription!='' or detaileddescription!='') and @kind='function' and @prot='public']"/>
 			</xsl:call-template>
 		</xsl:for-each>
 	</xsl:if>
