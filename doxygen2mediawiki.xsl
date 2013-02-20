@@ -781,7 +781,7 @@
 	<xsl:variable name="data" select="sectiondef/memberdef[(briefdescription!='' or detaileddescription!='') and @prot='public' and (@kind='variable')]"/>
 
 	<!-- Макросы -->
-	<xsl:variable name="define" select="sectiondef/memberdef[(briefdescription!='' or detaileddescription!='') and @prot='public' and (@kind='define')]"/>
+	<xsl:variable name="define" select="sectiondef/memberdef[@prot='public' and (@kind='define')]"/>
 
 	<!-- Родители -->
 	<xsl:variable name="parents" select="basecompoundref"/>
