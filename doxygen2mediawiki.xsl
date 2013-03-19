@@ -774,8 +774,22 @@
 	<!-- Конструкторы -->
 	<xsl:variable name="constructs" select="sectiondef[@kind='public-func']/memberdef[(briefdescription!='' or detaileddescription!='') and @kind='function'][(substring-after(name,'~')=$classname) or (name=$classname)]"/>
 
+
+	<!--xsl:choose>
+		<xsl:when test="@kind='group'">
+			<xsl:variable name="functions" select="sectiondef[@kind='user-defined' or @kind='func' or @kind='public-func']/memberdef[(briefdescription!='' or detaileddescription!='') and @kind='function' and @prot='public']"/>
+		</xsl:when>
+		<xsl:when test="@kind='class'">
+			
+		</xsl:when>
+		<xsl:otherwise>
+			<xsl:variable name="functions" select="sectiondef[@kind='user-defined' or @kind='func' or @kind='public-func']/memberdef[(briefdescription!='' or detaileddescription!='') and @kind='function' and @prot='public'][(substring-after(name,'~')!=$classname) and (name!=$classname)]"/>
+		</xsl:otherwise>
+	</xsl:choose-->
+
 	<!-- Методы/функции -->
-	<xsl:variable name="functions" select="sectiondef[@kind='user-defined' or @kind='func' or @kind='public-func']/memberdef[(briefdescription!='' or detaileddescription!='') and @kind='function' and @prot='public'][(substring-after(name,'~')!=$classname) and (name!=$classname)]"/>
+	<xsl:variable name="functions" select="sectiondef[@kind='user-defined' or @kind='func' or @kind='public-func']/memberdef[(briefdescription!='' or detaileddescription!='') and @kind='function' and @prot='public'][(ancestor::compounddef[@kind!='group'] and (substring-after(name,'~')!=$classname) and (name!=$classname)) or (ancestor::compounddef[@kind='group'])]"/>
+	
 
 	<!-- Данные -->
 	<xsl:variable name="data" select="sectiondef/memberdef[(briefdescription!='' or detaileddescription!='') and @prot='public' and (@kind='variable')]"/>
