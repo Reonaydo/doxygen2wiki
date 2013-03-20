@@ -799,6 +799,18 @@
 	<!-- Макросы -->
 	<xsl:variable name="define" select="sectiondef/memberdef[@prot='public' and (@kind='define')]"/>
 
+	<xsl:if test="@kind='class' or detaileddescription/para">
+		<xsl:value-of select="$newline"/><xsl:text>'''Описание:'''</xsl:text><xsl:value-of select="$newline"/><xsl:value-of select="$newline"/>
+			<xsl:if test="templateparamlist">
+				<xsl:apply-templates select="templateparamlist"/>
+			</xsl:if>
+			<xsl:value-of select="@kind"/>
+			<xsl:text> '''</xsl:text><xsl:value-of select="$name"/><xsl:text>'''</xsl:text>
+			<xsl:value-of select="$newline"/>
+			<xsl:value-of select="$newline"/>
+		<xsl:apply-templates select="detaileddescription/para" />
+	</xsl:if>
+
 	<!-- Родители -->
 	<xsl:variable name="parents" select="basecompoundref"/>
 
@@ -815,18 +827,6 @@
 		<xsl:value-of select="$newline"/><xsl:text>'''Потомки:'''</xsl:text><xsl:value-of select="$newline"/>
 		<xsl:apply-templates select="$children"/>
 		<xsl:value-of select="$newline"/>
-	</xsl:if>
-
-	<xsl:if test="@kind='class' or detaileddescription/para">
-		<xsl:value-of select="$newline"/><xsl:text>'''Описание:'''</xsl:text><xsl:value-of select="$newline"/><xsl:value-of select="$newline"/>
-			<xsl:if test="templateparamlist">
-				<xsl:apply-templates select="templateparamlist"/>
-			</xsl:if>
-			<xsl:value-of select="@kind"/>
-			<xsl:text> '''</xsl:text><xsl:value-of select="$name"/><xsl:text>'''</xsl:text>
-			<xsl:value-of select="$newline"/>
-			<xsl:value-of select="$newline"/>
-		<xsl:apply-templates select="detaileddescription/para" />
 	</xsl:if>
 
 	<xsl:if test="$define">
