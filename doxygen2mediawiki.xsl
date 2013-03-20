@@ -60,9 +60,23 @@
 	</xsl:variable>
 	<!--xsl:value-of select="$text"/-->
 	<xsl:choose>
-		<xsl:when test="ancestor-or-self::type">
+		<xsl:when test="(ancestor-or-self::type or ancestor::simplesect)">
 			<xsl:call-template name="replace-all">
-				<xsl:with-param name="text"><xsl:value-of select="$text"/></xsl:with-param>
+				<xsl:with-param name="text">
+					<xsl:call-template name="replace-all">
+						<xsl:with-param name="text">
+							<xsl:call-template name="replace-all">
+								<xsl:with-param name="text">
+									<xsl:value-of select="$text"/>
+								</xsl:with-param>
+								<xsl:with-param name="replace" select="'&lt;'"/>
+								<xsl:with-param name="by" select="'&#38;lt;'"/>
+							</xsl:call-template>
+						</xsl:with-param>
+						<xsl:with-param name="replace" select="'&gt;'"/>
+						<xsl:with-param name="by" select="'&#38;gt;'"/>
+					</xsl:call-template>
+				</xsl:with-param>
 				<xsl:with-param name="replace" select="' '"/>
 				<xsl:with-param name="by" select="'&#38;&#35;160;'"/>
 			</xsl:call-template>
@@ -145,7 +159,20 @@
 	<xsl:text>[[#</xsl:text>
 	<xsl:value-of select="$linktoname" />
 	<xsl:text>|</xsl:text>
-	<xsl:value-of select="." />
+		<xsl:call-template name="replace-all">
+			<xsl:with-param name="text">
+				<xsl:call-template name="replace-all">
+					<xsl:with-param name="text">
+						<xsl:value-of select="."/>
+					</xsl:with-param>
+					<xsl:with-param name="replace" select="'&lt;'"/>
+					<xsl:with-param name="by" select="'&#38;lt;'"/>
+				</xsl:call-template>
+			</xsl:with-param>
+			<xsl:with-param name="replace" select="'&gt;'"/>
+			<xsl:with-param name="by" select="'&#38;gt;'"/>
+		</xsl:call-template>
+	<!--xsl:value-of select="." /-->
 	<xsl:text>]]</xsl:text>
 </xsl:template>
 
@@ -310,14 +337,14 @@
 
 <xsl:template match="programlisting">
 	<xsl:value-of select="$newline"/>
-	<xsl:if test="(ancestor::simplesect or ancestor::para)">
+	<xsl:if test="(ancestor::simplesect or ancestor::para) and not (ancestor::simplesect[ancestor::simplesect or ancestor::para])">
 		<xsl:text>&lt;/p&gt;</xsl:text>
 	</xsl:if>
-		<xsl:apply-templates />
+		<!--xsl:apply-templates /-->
 	<xsl:text>&lt;code&gt;</xsl:text>
 	<xsl:apply-templates select="codeline"/><xsl:value-of select="$newline"/>
 	<xsl:text>&lt;/code&gt;</xsl:text>
-	<xsl:if test="(ancestor::simplesect or ancestor::para)">
+	<xsl:if test="(ancestor::simplesect or ancestor::para) and not (ancestor::simplesect[ancestor::simplesect or ancestor::para])">
 		<xsl:text>&lt;p&gt;</xsl:text>
 	</xsl:if>
 </xsl:template>
@@ -664,7 +691,7 @@
 
 <xsl:template match="/doxygen">
 <doc><pages type="Classes">
-<!--xsl:for-each select="(compounddef[@kind='class' or @kind='namespace' or @kind='struct' or @kind='group' or @kind='file'][compoundname='mgr_db' or compoundname='mgr_crypto::Cert'])"-->
+<!--xsl:for-each select="(compounddef[@kind='class' or @kind='namespace' or @kind='struct' or @kind='group' or @kind='file'][compoundname='isp_api::ExtTableNameListAction' or compoundname='isp_api::ExtTableIdListAction'])"-->
 <xsl:for-each select="compounddef[@kind='class' or @kind='namespace' or @kind='struct' or @kind='group' or @kind='file']">
 	<xsl:variable name="name"><xsl:value-of select="compoundname"/></xsl:variable>
 	<xsl:variable name="classname">
