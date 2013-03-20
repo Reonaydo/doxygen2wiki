@@ -458,6 +458,8 @@
 	<!--парсим параметры и делаем ссылки-->
 	<xsl:call-template name="paramlist"/>
 
+	<xsl:text>'''</xsl:text>
+
 	<xsl:apply-templates select="exceptions"/>
 	<xsl:if test="initializer!=''"><xsl:apply-templates select="initializer"/></xsl:if>
 
@@ -815,6 +817,18 @@
 		<xsl:value-of select="$newline"/>
 	</xsl:if>
 
+	<xsl:if test="@kind='class' or detaileddescription/para">
+		<xsl:value-of select="$newline"/><xsl:text>'''Описание:'''</xsl:text><xsl:value-of select="$newline"/><xsl:value-of select="$newline"/>
+			<xsl:if test="templateparamlist">
+				<xsl:apply-templates select="templateparamlist"/>
+			</xsl:if>
+			<xsl:value-of select="@kind"/>
+			<xsl:text> '''</xsl:text><xsl:value-of select="$name"/><xsl:text>'''</xsl:text>
+			<xsl:value-of select="$newline"/>
+			<xsl:value-of select="$newline"/>
+		<xsl:apply-templates select="detaileddescription/para" />
+	</xsl:if>
+
 	<xsl:if test="$define">
 		<xsl:value-of select="$newline"/><xsl:text>== Макросы ==</xsl:text><xsl:value-of select="$newline"/>
 		<xsl:call-template name="short-function-table">
@@ -889,17 +903,6 @@
 		</xsl:call-template>
 	</xsl:if>
 
-	<xsl:if test="@kind='class' or detaileddescription/para">
-		<xsl:value-of select="$newline"/><xsl:text>== Описание ==</xsl:text><xsl:value-of select="$newline"/>
-			<xsl:if test="templateparamlist">
-				<xsl:apply-templates select="templateparamlist"/>
-			</xsl:if>
-			<xsl:value-of select="@kind"/>
-			<xsl:text> '''</xsl:text><xsl:value-of select="$name"/><xsl:text>'''</xsl:text>
-			<xsl:value-of select="$newline"/>
-			<xsl:value-of select="$newline"/>
-		<xsl:apply-templates select="detaileddescription/para" />
-	</xsl:if>
 
 	<xsl:if test="$enums">
 		<xsl:value-of select="$newline"/><xsl:text>== Перечисления (подробно) ==</xsl:text><xsl:value-of select="$newline"/>
