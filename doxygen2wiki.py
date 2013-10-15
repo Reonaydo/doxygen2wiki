@@ -65,6 +65,6 @@ for page in result.findall('pages/page'):
 	wiki.post(page.find('title').text, getElemText(page.find('text')))
 	pagelist.append(title)
 for title in list(set(wiki.get_list_in_category('autogenerate')) - set(pagelist)):
-	if not (title.find('Категория:') >= 0 or title.find('Category:') >= 0:
+	if not (title.find('Категория:') >= 0 or title.find('Category:') >= 0):
 		print('Deleting page %s' % title)
 		wiki.delete(title)
