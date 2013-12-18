@@ -488,7 +488,8 @@
 	<xsl:text>'''</xsl:text>
 
 	<xsl:apply-templates select="exceptions"/>
-	<xsl:if test="initializer!=''"><xsl:apply-templates select="initializer"/></xsl:if>
+	<!-- Если это define, его тело не постим -->
+	<xsl:if test="initializer!='' and @kind!='define'"><xsl:apply-templates select="initializer"/></xsl:if>
 
 	<xsl:text> ===</xsl:text>
 	<xsl:value-of select="$newline"/>
@@ -647,7 +648,8 @@
 	<xsl:call-template name="paramlist"/>
 	
 	<xsl:apply-templates select="exceptions"/>
-	<xsl:if test="initializer!=''"><xsl:apply-templates select="initializer"/></xsl:if>
+	<!-- Если это define, его тело не постим -->
+	<xsl:if test="initializer!='' and $type!='define'"><xsl:apply-templates select="initializer"/></xsl:if>
 
 	<xsl:value-of select="$newline"/>
 	<xsl:if test="briefdescription/para">
@@ -691,7 +693,7 @@
 
 <xsl:template match="/doxygen">
 <doc><pages type="Classes">
-<!--xsl:for-each select="(compounddef[@kind='class' or @kind='namespace' or @kind='struct' or @kind='group' or @kind='file'][compoundname='isp_api::ExtTableNameListAction' or compoundname='isp_api::ExtTableIdListAction'])"-->
+<!--xsl:for-each select="(compounddef[@kind='class' or @kind='namespace' or @kind='struct' or @kind='group' or @kind='file'][compoundname='isp_api::ExtTableNameListAction' or compoundname='module.h'])"-->
 <xsl:for-each select="compounddef[@kind='class' or @kind='namespace' or @kind='struct' or @kind='group' or @kind='file']">
 	<xsl:variable name="name"><xsl:value-of select="compoundname"/></xsl:variable>
 	<xsl:variable name="classname">
