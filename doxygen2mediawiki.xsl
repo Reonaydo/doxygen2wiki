@@ -433,6 +433,7 @@
 
 <xsl:template match="parameterlist[@kind='param']">
 	<xsl:value-of select="$newline"/>
+	<xsl:value-of select="$newline"/>
 	<xsl:text>'''Аргументы:'''</xsl:text><xsl:value-of select="$newline"/>
 	<xsl:text>{|</xsl:text><xsl:value-of select="$newline"/>
 	<xsl:for-each select="parameteritem">
