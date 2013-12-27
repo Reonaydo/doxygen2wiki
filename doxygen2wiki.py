@@ -60,7 +60,7 @@ else:
 wiki = MediaWiki(WIKI_URL, WIKI_USER, WIKI_PASS)
 
 for page in result.findall('pages/page'):
-	title = page.find('title').text.replace('_', ' ')
+	title = page.find('title').text.replace('_', ' ').decode('utf8')
 	print('Posting page %s' % title)
 	wiki.post(page.find('title').text, getElemText(page.find('text')))
 	pagelist.append(title)
