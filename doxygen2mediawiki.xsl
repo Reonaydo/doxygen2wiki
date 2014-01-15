@@ -341,9 +341,9 @@
 		<xsl:text>&lt;/p&gt;</xsl:text>
 	</xsl:if>
 		<!--xsl:apply-templates /-->
-	<xsl:text>&lt;cpp&gt;</xsl:text>
+	<xsl:text>&lt;code&gt;</xsl:text>
 	<xsl:apply-templates select="codeline"/><xsl:value-of select="$newline"/>
-	<xsl:text>&lt;/cpp&gt;</xsl:text>
+	<xsl:text>&lt;/code&gt;</xsl:text>
 	<xsl:if test="(ancestor::simplesect or ancestor::para) and not (ancestor::simplesect[ancestor::simplesect or ancestor::para])">
 		<xsl:text>&lt;p&gt;</xsl:text>
 	</xsl:if>
