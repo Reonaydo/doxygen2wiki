@@ -227,7 +227,7 @@
 <xsl:template match="ref">
 	<xsl:variable name="refid"><xsl:value-of select="@refid" /></xsl:variable>
 	<!--xsl:variable name="refanchor"><xsl:value-of select="substring-after(substring-after($refid, '/'), '/')"/></xsl:variable-->
-	<xsl:variable name="pclass" select="//*[@id=$refid]/ancestor-or-self::compounddef[1]"/>
+	<xsl:variable name="pclass" select="(//*[@id=$refid]/ancestor-or-self::compounddef)[1]"/>
 	<!--xsl:variable name="refobj" select="$pclass/descendant-or-self::*[@id=$refid]"/-->
 	<!--xsl:variable name="compoundname"><xsl:value-of select="$pclass/compoundname"/></xsl:variable-->
 	<xsl:choose>
@@ -373,7 +373,7 @@
 			<xsl:text>&lt;/font&gt;</xsl:text>
 		</xsl:when>
 		<xsl:when test="@class = 'comment'">
-			<xsl:text>&lt;font color="blue"&gt;</xsl:text>
+			<xsl:text>&lt;font color="grey"&gt;</xsl:text>
 			<xsl:apply-templates />
 			<xsl:text>&lt;/font&gt;</xsl:text>
 		</xsl:when>
@@ -722,7 +722,7 @@
 
 <xsl:template match="/doxygen">
 <doc><pages type="Classes">
-<!--xsl:for-each select="(compounddef[@kind='class' or @kind='namespace' or @kind='struct' or @kind='group' or @kind='file'][compoundname='isp_api::FormAction' or compoundname='module.h'])"-->
+<!--xsl:for-each select="(compounddef[@kind='class' or @kind='namespace' or @kind='struct' or @kind='group' or @kind='file'][compoundname='isp_api::Action' or compoundname='module.h' or compoundname='module'])"-->
 <xsl:for-each select="compounddef[@kind='class' or @kind='namespace' or @kind='struct' or @kind='group' or @kind='file']">
 	<xsl:variable name="name"><xsl:value-of select="compoundname"/></xsl:variable>
 	<xsl:variable name="classname">
