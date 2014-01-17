@@ -355,6 +355,34 @@
 
 <xsl:template match="highlight/sp"><xsl:text> </xsl:text></xsl:template>
 
+<xsl:template match="highlight">
+	<xsl:choose>
+		<xsl:when test="@class = 'keyword'">
+			<xsl:text>&lt;font color="green"&gt;</xsl:text>
+			<xsl:apply-templates />
+			<xsl:text>&lt;/font&gt;</xsl:text>
+		</xsl:when>
+		<xsl:when test="@class = 'stringliteral'">
+			<xsl:text>&lt;font color="red"&gt;</xsl:text>
+			<xsl:apply-templates />
+			<xsl:text>&lt;/font&gt;</xsl:text>
+		</xsl:when>
+		<xsl:when test="@class = 'keywordtype'">
+			<xsl:text>&lt;font color="brown"&gt;</xsl:text>
+			<xsl:apply-templates />
+			<xsl:text>&lt;/font&gt;</xsl:text>
+		</xsl:when>
+		<xsl:when test="@class = 'comment'">
+			<xsl:text>&lt;font color="blue"&gt;</xsl:text>
+			<xsl:apply-templates />
+			<xsl:text>&lt;/font&gt;</xsl:text>
+		</xsl:when>
+		<xsl:otherwise>
+			<xsl:apply-templates />
+		</xsl:otherwise>
+	</xsl:choose>
+</xsl:template>
+
 <xsl:template match="includes">
 	<xsl:value-of select="$newline"/><xsl:value-of select="$newline"/>
 	<xsl:text> </xsl:text><xsl:text>&lt;code&gt;&lt;nowiki&gt;#include &lt;</xsl:text>
@@ -694,8 +722,8 @@
 
 <xsl:template match="/doxygen">
 <doc><pages type="Classes">
-<!--xsl:for-each select="(compounddef[@kind='class' or @kind='namespace' or @kind='struct' or @kind='group' or @kind='file'][compoundname='isp_api::ExtTableNameListAction' or compoundname='module.h'])"-->
-<xsl:for-each select="compounddef[@kind='class' or @kind='namespace' or @kind='struct' or @kind='group' or @kind='file']">
+<xsl:for-each select="(compounddef[@kind='class' or @kind='namespace' or @kind='struct' or @kind='group' or @kind='file'][compoundname='isp_api::FormAction' or compoundname='module.h'])">
+<!--xsl:for-each select="compounddef[@kind='class' or @kind='namespace' or @kind='struct' or @kind='group' or @kind='file']"-->
 	<xsl:variable name="name"><xsl:value-of select="compoundname"/></xsl:variable>
 	<xsl:variable name="classname">
 		<xsl:choose>
