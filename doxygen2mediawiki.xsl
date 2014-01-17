@@ -227,7 +227,7 @@
 <xsl:template match="ref">
 	<xsl:variable name="refid"><xsl:value-of select="@refid" /></xsl:variable>
 	<!--xsl:variable name="refanchor"><xsl:value-of select="substring-after(substring-after($refid, '/'), '/')"/></xsl:variable-->
-	<xsl:variable name="pclass" select="//*[@id=$refid]/ancestor-or-self::compounddef"/>
+	<xsl:variable name="pclass" select="//*[@id=$refid]/ancestor-or-self::compounddef[1]"/>
 	<!--xsl:variable name="refobj" select="$pclass/descendant-or-self::*[@id=$refid]"/-->
 	<!--xsl:variable name="compoundname"><xsl:value-of select="$pclass/compoundname"/></xsl:variable-->
 	<xsl:choose>
