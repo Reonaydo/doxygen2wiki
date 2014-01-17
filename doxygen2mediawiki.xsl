@@ -722,8 +722,8 @@
 
 <xsl:template match="/doxygen">
 <doc><pages type="Classes">
-<xsl:for-each select="(compounddef[@kind='class' or @kind='namespace' or @kind='struct' or @kind='group' or @kind='file'][compoundname='isp_api::FormAction' or compoundname='module.h'])">
-<!--xsl:for-each select="compounddef[@kind='class' or @kind='namespace' or @kind='struct' or @kind='group' or @kind='file']"-->
+<!--xsl:for-each select="(compounddef[@kind='class' or @kind='namespace' or @kind='struct' or @kind='group' or @kind='file'][compoundname='isp_api::FormAction' or compoundname='module.h'])"-->
+<xsl:for-each select="compounddef[@kind='class' or @kind='namespace' or @kind='struct' or @kind='group' or @kind='file']">
 	<xsl:variable name="name"><xsl:value-of select="compoundname"/></xsl:variable>
 	<xsl:variable name="classname">
 		<xsl:choose>
