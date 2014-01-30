@@ -61,8 +61,8 @@
 	<!--xsl:value-of select="$text"/-->
 	<xsl:choose>
 		<xsl:when test="(ancestor-or-self::type or ancestor::simplesect)">
-			<xsl:call-template name="replace-all">
-				<xsl:with-param name="text">
+			<!--xsl:call-template name="replace-all">
+				<xsl:with-param name="text"-->
 					<xsl:call-template name="replace-all">
 						<xsl:with-param name="text">
 							<xsl:call-template name="replace-all">
@@ -76,10 +76,10 @@
 						<xsl:with-param name="replace" select="'&gt;'"/>
 						<xsl:with-param name="by" select="'&#38;gt;'"/>
 					</xsl:call-template>
-				</xsl:with-param>
+				<!--/xsl:with-param>
 				<xsl:with-param name="replace" select="' '"/>
 				<xsl:with-param name="by" select="'&#38;&#35;160;'"/>
-			</xsl:call-template>
+			</xsl:call-template-->
 		</xsl:when>
 		<xsl:when test="(name(..)='derivedcompoundref' or name(..)='basecompoundref') and contains($text, '&lt;')">
 			<xsl:value-of select="substring-before($text, '&lt;')"/>
