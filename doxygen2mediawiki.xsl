@@ -537,6 +537,11 @@
 		<xsl:text>''Данный метод является приватным''</xsl:text>
 		<xsl:value-of select="$newline"/>
 	</xsl:if>
+	<xsl:if test="@prot='protected'">
+		<xsl:value-of select="$newline"/>
+		<xsl:text>''Данный метод является защищённым''</xsl:text>
+		<xsl:value-of select="$newline"/>
+	</xsl:if>
 	<xsl:if test="briefdescription/para">
 		<xsl:value-of select="$newline"/>
 		<xsl:apply-templates select="briefdescription/para" />
@@ -945,6 +950,14 @@
 		</xsl:for-each>
 	</xsl:if>
 
+	<xsl:if test="sectiondef[@kind='protected-func']">
+		<xsl:value-of select="$newline"/><xsl:text>== Защищённые члены (кратко) ==</xsl:text><xsl:value-of select="$newline"/>
+		<xsl:call-template name="short-function-table">
+			<xsl:with-param name="type" select="'function'"/>
+			<xsl:with-param name="selectdef" select="sectiondef[@kind='protected-func']/memberdef[@prot='protected' and @virt='virtual' and (briefdescription!='' or detaileddescription!='')]"/>
+		</xsl:call-template>
+	</xsl:if>
+
 	<xsl:if test="sectiondef[@kind='private-func']">
 		<xsl:value-of select="$newline"/><xsl:text>== Приватные члены (кратко) ==</xsl:text><xsl:value-of select="$newline"/>
 		<xsl:call-template name="short-function-table">
@@ -976,7 +989,7 @@
 		<xsl:apply-templates select="$constructs" />
 	</xsl:if>
 
-	<xsl:if test="$functions or sectiondef[@kind='private-func']">
+	<xsl:if test="$functions or sectiondef[@kind='private-func'] or sectiondef[@kind='private-func']">
 		<xsl:value-of select="$newline"/>
 		<xsl:choose>
 			<xsl:when test="@kind='class'">
@@ -989,6 +1002,7 @@
 		<xsl:value-of select="$newline"/>
 		<xsl:apply-templates select="$functions"/>
 		<xsl:apply-templates select="sectiondef[@kind='private-func']/memberdef[@prot='private' and @virt='virtual' and (briefdescription!='' or detaileddescription!='')]"/>
+		<xsl:apply-templates select="sectiondef[@kind='protected-func']/memberdef[@prot='protected' and @virt='virtual' and (briefdescription!='' or detaileddescription!='')]"/>
 	</xsl:if>
 
 	<!--xsl:if test="((sectiondef[@kind='public-attrib']) or (sectiondef[@kind='public-static-attrib']))">
