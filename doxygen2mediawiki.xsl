@@ -742,25 +742,29 @@
 	</xsl:variable>
 	<page>
 	<title>
-	<xsl:choose>
-		<xsl:when test="@kind='class'">
-			<xsl:text>Class_</xsl:text><xsl:value-of select="$name"/>
-		</xsl:when>
-		<xsl:when test="@kind='namespace'">
-			<xsl:text>Namespace_</xsl:text><xsl:value-of select="$name"/>
-		</xsl:when>
-		<xsl:when test="@kind='group'">
-			<xsl:text>Group_</xsl:text><xsl:value-of select="$name"/>
-		</xsl:when>
-		<xsl:when test="@kind='struct'">
-			<xsl:text>Struct_</xsl:text><xsl:value-of select="$name"/>
-		</xsl:when>
-		<xsl:when test="@kind='file'">
-			<xsl:text>File_</xsl:text><xsl:value-of select="$name"/>
-		</xsl:when>
-	</xsl:choose>
+	<xsl:variable name="pagename">
+		<xsl:choose>
+			<xsl:when test="@kind='class'">
+				<xsl:text>Class_</xsl:text><xsl:value-of select="$name"/>
+			</xsl:when>
+			<xsl:when test="@kind='namespace'">
+				<xsl:text>Namespace_</xsl:text><xsl:value-of select="$name"/>
+			</xsl:when>
+			<xsl:when test="@kind='group'">
+				<xsl:text>Group_</xsl:text><xsl:value-of select="$name"/>
+			</xsl:when>
+			<xsl:when test="@kind='struct'">
+				<xsl:text>Struct_</xsl:text><xsl:value-of select="$name"/>
+			</xsl:when>
+			<xsl:when test="@kind='file'">
+				<xsl:text>File_</xsl:text><xsl:value-of select="$name"/>
+			</xsl:when>
+		</xsl:choose>
+	</xsl:variable>
+	<xsl:value-of select="$pagename"/>
 	</title>
 	<text>
+	<xsl:text>[[en:</xsl:text><xsl:value-of select="$pagename"/><xsl:text>]]</xsl:text>
 	<xsl:choose>
 		<xsl:when test="@kind='class' and not(templateparamlist)">
 			<xsl:variable name="id"><xsl:value-of select="@id"/></xsl:variable>
