@@ -48,7 +48,7 @@ class MediaWiki():
 		if not token:
 			print('Token is empty')
 			print(res)
-			sys.exit(1)
+#			sys.exit(1)
 		return token 
 
 
