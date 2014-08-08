@@ -48,6 +48,7 @@ class MediaWiki():
 		if not token:
 			print('Token is empty')
 			print(res)
+			returnn
 #			sys.exit(1)
 		return token 
 
@@ -55,6 +56,8 @@ class MediaWiki():
 	def post(self, pagename, pagetext):
 		'''Постим страницу'''
 		token = self.getToken(pagename)
+		if not token:
+			return
 		params = {'action':'edit', 'title':pagename, 'text':pagetext, 'recreate':1, 'token':token}
 		req = wikitools.api.APIRequest(self.site, params)  
 		res = req.query(querycontinue=False)
