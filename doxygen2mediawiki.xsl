@@ -973,7 +973,7 @@
 		<xsl:value-of select="$newline"/><xsl:text>== Защищённые члены (кратко) ==</xsl:text><xsl:value-of select="$newline"/>
 		<xsl:call-template name="short-function-table">
 			<xsl:with-param name="type" select="'function'"/>
-			<xsl:with-param name="selectdef" select="sectiondef[@kind='protected-func']/memberdef[@prot='protected' and @virt='virtual' and (briefdescription!='' or detaileddescription!='')]"/>
+			<xsl:with-param name="selectdef" select="sectiondef[@kind='protected-func']/memberdef[@prot='protected' and (briefdescription!='' or detaileddescription!='')]"/>
 		</xsl:call-template>
 	</xsl:if>
 
@@ -1008,7 +1008,7 @@
 		<xsl:apply-templates select="$constructs" />
 	</xsl:if>
 
-	<xsl:if test="$functions or sectiondef[@kind='private-func'] or sectiondef[@kind='private-func']">
+	<xsl:if test="$functions or sectiondef[@kind='private-func'] or sectiondef[@kind='protected-func']">
 		<xsl:value-of select="$newline"/>
 		<xsl:choose>
 			<xsl:when test="@kind='class'">
@@ -1021,7 +1021,7 @@
 		<xsl:value-of select="$newline"/>
 		<xsl:apply-templates select="$functions"/>
 		<xsl:apply-templates select="sectiondef[@kind='private-func']/memberdef[@prot='private' and @virt='virtual' and (briefdescription!='' or detaileddescription!='')]"/>
-		<xsl:apply-templates select="sectiondef[@kind='protected-func']/memberdef[@prot='protected' and @virt='virtual' and (briefdescription!='' or detaileddescription!='')]"/>
+		<xsl:apply-templates select="sectiondef[@kind='protected-func']/memberdef[@prot='protected' and (briefdescription!='' or detaileddescription!='')]"/>
 	</xsl:if>
 
 	<!--xsl:if test="((sectiondef[@kind='public-attrib']) or (sectiondef[@kind='public-static-attrib']))">
